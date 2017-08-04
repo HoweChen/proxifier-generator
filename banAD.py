@@ -7,14 +7,43 @@ file_combine = file_location + file_name
 argv = ['outbound_block_list', 'bypass_list', 'proxy_list']
 
 
-def outbound_block_list(file):
-    outbound_block_list_write = open(
+def outbound_block_list(file_washed):
+    outbound_block_list_clean = open(
+        file_location + 'outbound_block_list.txt', mode='w').close()
+    outbound_block_list_append = open(
         file_location + 'outbound_block_list.txt', mode='a')
-    pass
+    sub_outbound_block_list = []
+
+    start = file_washed.index('[outbound_block_list]\n')
+    end = file_washed.index('[bypass_list]\n')
+
+    for line in file_washed[start + 1:end]:
+        if line != '\n':
+            sub_outbound_block_list.append(line)
+
+    for line in sub_outbound_block_list:
+        outbound_block_list_append.write(line)
+
+    outbound_block_list_append.close()
 
 
-def bypass_list(file):
-    bypass_list_write = open(file_location + 'bypass_list.txt', mode='a')
+def bypass_list(file_washed):
+    bypass_list_clean = open(
+        file_location + 'bypass_list.txt', mode='w').close()
+    bypass_list_append = open(file_location + 'bypass_list.txt', mode='a')
+    sub_bypass_list = []
+
+    start = file_washed.index('[bypass_list]\n')
+    end = file_washed.index('[proxy_list]\n')
+
+    for line in file_washed[start + 1:end]:
+        if line != '\n':
+            sub_bypass_list.append(line)
+
+    for line in sub_bypass_list:
+        bypass_list_append.write(line)
+
+    bypass_list_append.close()
     pass
 
 
