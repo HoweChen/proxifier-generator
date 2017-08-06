@@ -1,4 +1,5 @@
 import requests as rq
+import ipaddress
 
 file_location = './split_files/'
 file_name = 'banAD.txt'
@@ -13,7 +14,6 @@ def ip_address_handling(ip_address):
 
 
 def outbound_block_list(file_washed):
-
     # argc
     outbound_block_list_clean = open(
         file_location + 'outbound_block_list.txt',
@@ -34,8 +34,6 @@ def outbound_block_list(file_washed):
             if '(^|\\.)' in line:
                 line = line[6::]
                 # print(line)
-            else:
-
         else:
             continue
         sub_outbound_block_list.append(line)
@@ -43,14 +41,24 @@ def outbound_block_list(file_washed):
     outbound_block_list_append.close()
 
 
-def bypass_list(file_washed):
+def if_ip_address(ip_str):
+    try:
+        ipaddress.IPv4Network(ip_str)
+    except ipaddress.AddressValueError:
+        return False
+    else:
+        return True
 
+
+def bypass_list(file_washed):
     # argc
     bypass_list_clean = open(
         file_location + 'bypass_list.txt', mode='w', encoding='utf8').close()
     bypass_list_append = open(
         file_location + 'bypass_list.txt', mode='a', encoding='utf8')
     sub_bypass_list = []
+    domain_bypass_list = []
+    ip_bypass_list = []
 
     # start and end position of keyword
     start = file_washed.index('[bypass_list]\n')
@@ -59,23 +67,27 @@ def bypass_list(file_washed):
     # main part of function
     for line in file_washed[start + 1:end]:
         if line != '\n':
-            sub_bypass_list.append(line)
+            sub_bypass_list.append(line[0:-1])
 
+    # print(sub_bypass_list)
     for line in sub_bypass_list:
-        bypass_list_append.write(line)
-
-    for line in sub_bypass_list:
-        sub_line = []
-        line = str(line)
-        sub_line = line.split('\\')
-        # print(sub_line)
+        # bypass_list_append.write(line)
+        if '::ffff:' in line:
+            continue
+        else:
+            if if_ip_address(line) is False:
+                domain_bypass_list.append(line)
+            else:
+                ip_bypass_list.append(line)
 
     bypass_list_append.close()
-    pass
+    print('domain: ################################')
+    print(domain_bypass_list)
+    print('ip: *******************')
+    print(ip_bypass_list)
 
 
 def edit_file(file_combine):
-
     with open(file_combine, mode='r', encoding='utf8') as f_open:
         file_washed = []
         for line in f_open.readlines():
@@ -84,7 +96,7 @@ def edit_file(file_combine):
             else:
                 file_washed.append(line)
         f_open.close()
-        outbound_block_list(file_washed)
+        # outbound_block_list(file_washed)
         bypass_list(file_washed)
 
 
