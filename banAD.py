@@ -57,6 +57,8 @@ def bypass_list(file_washed):
     bypass_list_append = open(
         file_location + 'bypass_list.txt', mode='a', encoding='utf8')
     sub_bypass_list = []
+
+    # these two lists end with no '\n'
     domain_bypass_list = []
     ip_bypass_list = []
 
@@ -80,11 +82,14 @@ def bypass_list(file_washed):
             else:
                 ip_bypass_list.append(line)
 
+    # write to the bypass_list.txt
+    bypass_list_append.write('domain: ################################\n')
+    for item in domain_bypass_list:
+        bypass_list_append.write(item + '\n')
+    bypass_list_append.write('ip: *******************\n')
+    for item in ip_bypass_list:
+        bypass_list_append.write(item + '\n')
     bypass_list_append.close()
-    print('domain: ################################')
-    print(domain_bypass_list)
-    print('ip: *******************')
-    print(ip_bypass_list)
 
 
 def edit_file(file_combine):
